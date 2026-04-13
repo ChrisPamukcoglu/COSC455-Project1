@@ -21,36 +21,43 @@ impl Lexer { // creates and returns a new object from the source code
         }
     }
 
+    pub fn peek_char(&self) -> char { // return current character without moving
+        if self.position >= self.input.len() {
+            '\0'
+        } else {
+            self.input[self.position]
+        }
+    }
+
         pub fn next_token(&mut self) -> String { // builds and returns the fallowing token from the input
             self.current_lexeme.clear();
 
-            while self.position < self.input.len() //skip over spaces/tabs/newlines
-                && self.input[self.position].is_whitespace()
-            {
-            self.position += 1;
+            while self.position < self.input.len() && self.input[self.position].is_whitespace() { //skip over spaces/tabs/newlines
+                self.position += 1;
             }
 
             if self.position >= self.input.len() { // return empty string if there no more input left
                 return String::new();
             }
 
-            while self.position < self.input.len() // read charcters one by one until a white space has been reached
-                && !self.input[self.position].is_whitespace()
-            {
+            while self.position < self.input.len() && !self.input[self.position].is_whitespace() { // read charcters one by one until a white space has been reached
                 let ch = self.get_char();
                 self.add_char(ch);
             }
 
-            if self.lookup(&self.current_lexeme) || !self.current_lexeme.starts_with('#') { // if a valid token/key, it can be returned
-                self.current_lexeme.clone()
+            let token = self.current_lexeme.clone();
+
+            if token.starts_with('#') { // if a valid token/key, it can be returned
+                if self.lookup(&token) {
+                    token
             } else  {
-                eprintln!(
-                    "Lexical error: '{}' is not a valid token.",
-                    self.current_lexeme
-             );
-                std::process::exit(1);
+                eprintln!("Lexical error: '{}' is not a valid token.", token);
+                    std::process::exit(1);
             }
+        } else {
+            token
         }
+    }
 }
 
 impl LexicalAnalyzer for Lexer {
