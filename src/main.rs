@@ -8,6 +8,7 @@ mod semantic;
 use compiler::{Compiler, CompilerTrait};
 use lexer::Lexer;
 use parser::Parser;
+use semantic::SemanticAnalyzer;
 
 fn main() {
     let source = "#HAI hello world #KBYE";
@@ -16,7 +17,6 @@ fn main() {
     compiler.compile(source);
 
     let mut lexer = Lexer::new(source);
-
     compiler.set_current_token(lexer.next_token());
 
     let mut parser = Parser::new(&mut lexer, &mut compiler);
@@ -24,4 +24,7 @@ fn main() {
 
     println!("Parsing successful!");
     println!("Parse tree: {:?}", parser.compiler.parse_tree);
+
+    let mut semantic = SemanticAnalyzer::new();
+    semantic.analyze(&parser.compiler.parse_tree);
 }
