@@ -5,19 +5,23 @@ mod lexer;
 mod parser;
 mod semantic;
 
+use compiler::{Compiler, CompilerTrait};
 use lexer::Lexer;
+use parser::Parser;
 
 fn main() {
-    let source = "#HAI #MAEK HEAD #GIMMEH TITLE MyPage #OIC #MKAY #KBYE";
+    let source = "#HAI hello world #KBYE";
+
+    let mut compiler = Compiler::new();
+    compiler.compile(source);
+
     let mut lexer = Lexer::new(source);
 
-    loop {
-        let token = lexer.next_token();
+    compiler.set_current_token(lexer.next_token());
 
-        if token.is_empty() {
-            break;
-        }
+    let mut parser = Parser::new(&mut lexer, &mut compiler);
+    parser.parse_lolcode();
 
-        println!("Token: {}", token);
-    }
+    println!("Parsing successful!");
+    println!("Parse tree: {:?}", parser.compiler.parse_tree);
 }
