@@ -1,5 +1,9 @@
 // The main compiler structure 
 
+use crate::lexer::Lexer;
+use crate::parser::Parser;
+use crate::semantic::SemanticAnalyzer;
+
 pub trait CompilerTrait {  // behaviours that need to be implemented
     fn compile(&mut self, source: &str);
     fn next_token(&mut self) -> String;
@@ -28,6 +32,20 @@ impl CompilerTrait for Compiler { // starts the compiling process
     fn compile(&mut self, source: &str) { // saves the source code
         self.source = source.to_string();
         println!("Starting compilation...");
+        
+        println!("Starting compilation...");
+
+        let mut lexer = Lexer::new(source); // create the lexer from the source code
+
+        self.set_current_token(lexer.next_token());
+
+         let mut parser = Parser::new(&mut lexer, self); // create the parser and start syntax analysis
+        parser.parse_lolcode();
+
+        let mut semantic = SemanticAnalyzer::new();
+        semantic.analyze(&parser.compiler.parse_tree);
+
+        println!("Compilation finished successfully.");
     }
 
     fn next_token(&mut self) -> String { // returns the current token at work
