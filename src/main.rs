@@ -5,22 +5,36 @@ mod lexer;
 mod parser;
 mod semantic;
 
+use std::env;
+use std::fs;
+
 use compiler::{Compiler, CompilerTrait};
-use lexer::Lexer;
-use parser::Parser;
 
 fn main() {
-    let source = "#HAI #MAEK HEAD #GIMMEH TITLE My Page #OIC #MKAY #MAEK PARAGRAF Hello #GIMMEH BOLD World #OIC #MKAY #KBYE";
+    let args: Vec<String> = env::args().collect();
+
+    if args.len() != 2 {
+        eprintln!("Usage: lolcompiler <input.lol>");
+        std::process::exit(1);
+    }
+
+    let filename = &args[1];
+
+    if !filename.ends_with(".lol") {
+        eprintln!("Error: input file must have a .lol extension.");
+        std::process::exit(1);
+    }
+
+    let source = match fs::read_to_string(filename) {
+        Ok(contents) => contents,
+        Err(_) => {
+            eprintln!("Error: could not read file '{}'.", filename);
+            std::process::exit(1);
+        }
+    };
 
     let mut compiler = Compiler::new();
-    compiler.compile(source);
+    compiler.compile(&source);
 
-    let mut lexer = Lexer::new(source);
-    compiler.set_current_token(lexer.next_token());
-
-    let mut parser = Parser::new(&mut lexer, &mut compiler);
-    parser.parse_lolcode();
-
-    println!("Parsing successful!");
-    println!("Parse tree: {:?}", parser.compiler.parse_tree);
+    println!("Program finished.");
 }

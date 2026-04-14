@@ -32,8 +32,6 @@ impl CompilerTrait for Compiler { // starts the compiling process
     fn compile(&mut self, source: &str) { // saves the source code
         self.source = source.to_string();
         println!("Starting compilation...");
-        
-        println!("Starting compilation...");
 
         let mut lexer = Lexer::new(source); // create the lexer from the source code
 
