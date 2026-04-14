@@ -1,12 +1,13 @@
 // Entry point for the program
 
-mod compiler; // lets main know those files exist 
+mod compiler;
 mod lexer;
 mod parser;
 mod semantic;
 
 use std::env;
 use std::fs;
+use std::path::Path;
 
 use compiler::{Compiler, CompilerTrait};
 
@@ -35,6 +36,16 @@ fn main() {
 
     let mut compiler = Compiler::new();
     compiler.compile(&source);
+
+    let output_path = Path::new(filename).with_extension("html");
+
+    match fs::write(&output_path, &compiler.html_output) {
+        Ok(_) => println!("HTML output written to '{}'.", output_path.display()),
+        Err(_) => {
+            eprintln!("Error: could not write HTML output file.");
+            std::process::exit(1);
+        }
+    }
 
     println!("Program finished.");
 }

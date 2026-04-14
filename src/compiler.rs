@@ -1,10 +1,10 @@
-// The main compiler structure 
+// The main compiler structure
 
 use crate::lexer::Lexer;
 use crate::parser::Parser;
 use crate::semantic::SemanticAnalyzer;
 
-pub trait CompilerTrait {  // behaviours that need to be implemented
+pub trait CompilerTrait {
     fn compile(&mut self, source: &str);
     fn next_token(&mut self) -> String;
     fn parse(&mut self);
@@ -12,55 +12,57 @@ pub trait CompilerTrait {  // behaviours that need to be implemented
     fn set_current_token(&mut self, tok: String);
 }
 
-pub struct Compiler { // stores the data shared to the compiler
-    pub current_token: String, // current token
-    pub source: String, //full source code
-    pub parse_tree: Vec<String>, // items to be parsed
+pub struct Compiler {
+    pub current_token: String,
+    pub source: String,
+    pub parse_tree: Vec<String>,
+    pub html_output: String,
 }
 
-impl Compiler { // creates and returns a new and empty object for the compiler
+impl Compiler {
     pub fn new() -> Self {
         Self {
-        current_token: String::new(),
-        source: String::new(),
-        parse_tree: Vec::new(),
+            current_token: String::new(),
+            source: String::new(),
+            parse_tree: Vec::new(),
+            html_output: String::new(),
         }
     }
 }
 
-impl CompilerTrait for Compiler { // starts the compiling process
-    fn compile(&mut self, source: &str) { // saves the source code
+impl CompilerTrait for Compiler {
+    fn compile(&mut self, source: &str) {
         self.source = source.to_string();
         println!("Starting compilation...");
 
-        let mut lexer = Lexer::new(source); // create the lexer from the source code
+        let mut lexer = Lexer::new(source);
 
         self.set_current_token(lexer.next_token());
 
-         let mut parser = Parser::new(&mut lexer, self); // create the parser and start syntax analysis
+        let mut parser = Parser::new(&mut lexer, self);
         parser.parse_lolcode();
 
         let mut semantic = SemanticAnalyzer::new();
         semantic.analyze(&parser.compiler.parse_tree);
 
+        self.html_output = semantic.html_output.clone();
+
         println!("Compilation finished successfully.");
     }
 
-    fn next_token(&mut self) -> String { // returns the current token at work
+    fn next_token(&mut self) -> String {
         self.current_token.clone()
     }
 
     fn parse(&mut self) {
-        println!("Parsing strated...."); //starts parsing 
+        println!("Parsing started...");
     }
 
-    fn current_token(&self) -> String { //returns the current token as a string
+    fn current_token(&self) -> String {
         self.current_token.clone()
     }
 
-    fn set_current_token(&mut self, tok: String) { //updates the token that is being worked on
+    fn set_current_token(&mut self, tok: String) {
         self.current_token = tok;
     }
-
-
 }
