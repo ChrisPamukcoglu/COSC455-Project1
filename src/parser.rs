@@ -50,14 +50,9 @@ impl<'a> Parser<'a> {  // creates and returns a parser object
         }
 
         if self.compiler.current_token().eq_ignore_ascii_case("#MAEK") {
-            let saved = self.compiler.current_token();
-            self.next_token();
-
-            if self.compiler.current_token().eq_ignore_ascii_case("HEAD") {
-                self.compiler.set_current_token(saved);
+            let next = self.lexer.peek_token();
+            if next.eq_ignore_ascii_case("HEAD") {
                 self.parse_head();
-            } else {
-                self.compiler.set_current_token(saved);
             }
         }
 

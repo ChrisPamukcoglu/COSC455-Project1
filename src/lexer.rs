@@ -29,6 +29,27 @@ impl Lexer { // creates and returns a new object from the source code
         }
     }
 
+    pub fn peek_token(&self) -> String { // return next token without advancing position
+        let mut pos = self.position;
+
+        // skip whitespace
+        while pos < self.input.len() && self.input[pos].is_whitespace() {
+            pos += 1;
+        }
+
+        if pos >= self.input.len() {
+            return String::new();
+        }
+
+        let mut lex = String::new();
+        while pos < self.input.len() && !self.input[pos].is_whitespace() {
+            lex.push(self.input[pos]);
+            pos += 1;
+        }
+
+        lex
+    }
+
         pub fn next_token(&mut self) -> String { // builds and returns the fallowing token from the input
             self.current_lexeme.clear();
 
